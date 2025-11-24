@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: generative-models-api
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount models directory for pre-trained models
+      - ./models:/app/models:ro
+      # Mount data directory for CIFAR-10 dataset
+      - ./data:/app/data:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TORCH_HOME=/tmp/torch
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
